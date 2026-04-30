@@ -200,4 +200,227 @@ export default function App() {
             <p style={{ color:"#94a3b8", fontSize:13 }}>Contacte notre équipe</p>
             <a
               href="https://wa.me/213555123456"
-             
+              target="_blank"
+              style={{ color:"white", background:"#22c55e", padding:"12px", borderRadius:12, display:"flex", gap:8, justifyContent:"center", textDecoration:"none", fontWeight:"bold" }}
+            >
+              <Phone size={16} /> +213 555 123 456
+            </a>
+          </div>
+        </aside>
+
+        <main className="main">
+          <header className="topbar">
+            <div>
+              <h2 style={{ margin:0 }}>
+                {activePage === "Tableau de bord" ? "Dashboard Travora" : activePage}
+              </h2>
+              <p style={{ margin:0, color:"#94a3b8", fontSize:13 }}>
+                Plateforme touristique d’Algérie
+              </p>
+            </div>
+
+            <div className="searchBox" style={{ border:"1px solid rgba(255,255,255,.1)", borderRadius:14, padding:"10px 14px", display:"flex", alignItems:"center", gap:10, width:300 }}>
+              <Search size={18} color="#94a3b8" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Rechercher..."
+                style={{ background:"transparent", border:0, outline:0, color:"white", width:"100%" }}
+              />
+            </div>
+
+            <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+              <button onClick={() => alert("Notifications récentes")} style={{ background:"transparent", border:0, color:"white" }}>
+                <Bell />
+              </button>
+              <div style={{ width:42, height:42, borderRadius:"50%", background:"linear-gradient(135deg,#fb923c,#c2410c)", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:"bold" }}>
+                A
+              </div>
+            </div>
+          </header>
+
+          <div className="content">
+            {activePage === "Tableau de bord" && (
+              <>
+                <section className="hero">
+                  <div style={{ display:"flex", justifyContent:"space-between", gap:15, flexWrap:"wrap", marginBottom:24 }}>
+                    <div>
+                      <h2 style={{ margin:0, fontSize:30 }}>Bienvenue, Admin ! 👋</h2>
+                      <p style={{ color:"#94a3b8" }}>
+                        Voici les vraies réservations connectées à Supabase.
+                      </p>
+                    </div>
+
+                    <button onClick={fetchBookings} style={{ background:"#ff6b00", color:"white", border:0, borderRadius:12, padding:"13px 18px", fontWeight:"bold", display:"flex", gap:8, alignItems:"center" }}>
+                      <Download size={17} /> Actualiser
+                    </button>
+                  </div>
+
+                  <div className="stats">
+                    {stats.map(([title, value, Icon, color]: any) => (
+                      <div key={title} className="card">
+                        <div style={{ width:48, height:48, borderRadius:14, background:color, display:"flex", alignItems:"center", justifyContent:"center", marginBottom:16 }}>
+                          <Icon />
+                        </div>
+                        <p style={{ color:"#94a3b8", margin:0 }}>{title}</p>
+                        <h3 style={{ fontSize:30, margin:"8px 0" }}>{value}</h3>
+                        <p style={{ color:"#22c55e", fontSize:13 }}>Données en direct</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="grid2">
+                  <div className="card">
+                    <h3>Évolution des réservations</h3>
+                    <div style={{ height:230, display:"flex", alignItems:"end", gap:12, borderBottom:"1px solid rgba(255,255,255,.1)", paddingBottom:12 }}>
+                      {[35, 58, 76, 48, 84, 70, 60, 66, 82, 92].map((h, i) => (
+                        <div key={i} style={{ flex:1, height:`${h}%`, background:"linear-gradient(180deg,#fb923c,#9a3412)", borderRadius:"12px 12px 0 0" }} />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="card">
+                    <h3>Réservations par catégorie</h3>
+                    <div style={{ width:160, height:160, borderRadius:"50%", margin:"25px auto", background:"conic-gradient(#ff6b00 0 45%, #2563eb 45% 70%, #22c55e 70% 90%, #f59e0b 90% 100%)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      <div style={{ width:105, height:105, borderRadius:"50%", background:"#0b1322", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center" }}>
+                        <b style={{ fontSize:26 }}>{bookings.length}</b>
+                        <span style={{ color:"#94a3b8" }}>Total</span>
+                      </div>
+                    </div>
+                    <p>Voitures</p>
+                    <p>Yachts</p>
+                    <p>Voyages</p>
+                    <p>Jet-ski</p>
+                  </div>
+                </section>
+
+                <BookingsTable
+                  bookings={filteredBookings}
+                  loading={loading}
+                  setSelectedBooking={setSelectedBooking}
+                  updateBookingStatus={updateBookingStatus}
+                />
+              </>
+            )}
+
+            {activePage === "Réservations" && (
+              <BookingsTable
+                bookings={filteredBookings}
+                loading={loading}
+                setSelectedBooking={setSelectedBooking}
+                updateBookingStatus={updateBookingStatus}
+                full
+              />
+            )}
+
+            {activePage !== "Tableau de bord" && activePage !== "Réservations" && (
+              <section className="card">
+                <h2 style={{ marginTop:0 }}>{activePage}</h2>
+                <p style={{ color:"#94a3b8" }}>
+                  Cette page sera connectée à Supabase après les réservations.
+                </p>
+              </section>
+            )}
+          </div>
+        </main>
+      </div>
+
+      {selectedBooking && (
+        <div onClick={() => setSelectedBooking(null)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.65)", display:"flex", alignItems:"center", justifyContent:"center", padding:20 }}>
+          <div onClick={(e) => e.stopPropagation()} className="card" style={{ width:"100%", maxWidth:520 }}>
+            <h2>Détails réservation</h2>
+            <p><b>ID :</b> {selectedBooking.id}</p>
+            <p><b>Client :</b> {selectedBooking.customer_name}</p>
+            <p><b>Téléphone :</b> {selectedBooking.phone}</p>
+            <p><b>Service :</b> {selectedBooking.service_name}</p>
+            <p><b>Ville :</b> {selectedBooking.city}</p>
+            <p><b>Prix :</b> {selectedBooking.price} DA</p>
+            <p><b>Statut :</b> {statusLabel(selectedBooking.booking_status)}</p>
+
+            <a href={`https://wa.me/${selectedBooking.phone}`} target="_blank" style={{ color:"white", background:"#22c55e", padding:"12px", borderRadius:12, display:"inline-flex", gap:8, textDecoration:"none", fontWeight:"bold" }}>
+              <Phone size={16} /> WhatsApp
+            </a>
+
+            <button onClick={() => setSelectedBooking(null)} style={{ marginLeft:10, background:"#ff6b00", color:"white", border:0, padding:"12px", borderRadius:12 }}>
+              Fermer
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function BookingsTable({ bookings, loading, setSelectedBooking, updateBookingStatus, full = false }: any) {
+  return (
+    <section className="grid2" style={{ gridTemplateColumns: full ? "1fr" : undefined }}>
+      <div className="card tableWrap">
+        <h3>{full ? "Toutes les réservations" : "Réservations récentes"}</h3>
+
+        {loading ? (
+          <p style={{ color:"#94a3b8" }}>Chargement...</p>
+        ) : bookings.length === 0 ? (
+          <p style={{ color:"#94a3b8" }}>
+            Aucune réservation pour le moment. Ajoute une ligne dans Supabase → bookings.
+          </p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Service</th>
+                <th>Ville</th>
+                <th>Prix</th>
+                <th>Statut</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {bookings.map((b: Booking) => (
+                <tr key={b.id}>
+                  <td>{b.customer_name}</td>
+                  <td>{b.service_name}</td>
+                  <td>{b.city}</td>
+                  <td><b>{b.price || 0} DA</b></td>
+                  <td>
+                    <span style={{ ...statusStyle(b.booking_status), padding:"6px 10px", borderRadius:9 }}>
+                      {statusLabel(b.booking_status)}
+                    </span>
+                  </td>
+                  <td>
+                    <a href={`https://wa.me/${b.phone}`} target="_blank" style={{ color:"#22c55e", marginRight:8 }}>
+                      <Phone size={16} />
+                    </a>
+
+                    <button className="actionBtn" onClick={() => setSelectedBooking(b)}>
+                      <Eye size={16} />
+                    </button>
+
+                    <button className="actionBtn" onClick={() => updateBookingStatus(b.id, "confirmed")} style={{ background:"rgba(34,197,94,.2)" }}>
+                      <CheckCircle size={16} />
+                    </button>
+
+                    <button className="actionBtn" onClick={() => updateBookingStatus(b.id, "cancelled")} style={{ background:"rgba(239,68,68,.2)" }}>
+                      <XCircle size={16} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {!full && (
+        <div className="card">
+          <h3>Activités récentes</h3>
+          <p style={{ color:"#cbd5e1" }}>Dashboard connecté à Supabase.</p>
+          <p style={{ color:"#cbd5e1" }}>Les nouvelles réservations apparaîtront ici.</p>
+          <p style={{ color:"#cbd5e1" }}>Clique sur Actualiser pour recharger.</p>
+        </div>
+      )}
+    </section>
+  );
+}
